@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ultimez AI Resume Evaluator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  /* Carousel Styling */
+  .carousel-inner {
+    height: 50vh;
+  }
+
+  .carousel-item {
+    background-size: cover;
+    background-position: center;
+  }
+
+  .carousel-caption {
+    background: rgba(0, 0, 0, 0.55);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    color: #fff;
+  }
+
+  /* Heading Style */
+  .text-center h1,
+  .text-center h2 {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  /* Box/Card Style */
+  .card-style {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 25px 30px;
+    margin-bottom: 35px;
+    transition: all 0.3s ease-in-out;
+    border-left: 6px solid #007bff;
+  }
+
+  .card-style:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  }
+
+  /* Special Card for Result */
+  #result-card {
+    display: none;
+    border-left-color: #28a745;
+    background: #f0fff4;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004494);
+    transform: translateY(-2px);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    color: #fff;
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, #218838, #19692c);
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    color: #fff;
+  }
+
+  .btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #a71d2a);
+    transform: translateY(-2px);
+  }
+
+  .btn-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    border: none;
+    color: #000;
+  }
+
+  .btn-warning:hover {
+    background: linear-gradient(135deg, #e0a800, #c69500);
+    transform: translateY(-2px);
+  }
+
+  .btn-info {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    border: none;
+    color: #fff;
+  }
+
+  .btn-info:hover {
+    background: linear-gradient(135deg, #138496, #0f6674);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline-primary {
+    color: #007bff;
+    border: 2px solid #007bff;
+    background-color: transparent;
+  }
+
+  .btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .btn-sm:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  /* Input Styles */
+  input.form-control,
+  select.form-select {
+    border-radius: 10px;
+    box-shadow: none;
+    transition: 0.2s ease-in-out;
+  }
+
+  input.form-control:focus,
+  select.form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.2);
+  }
+
+  /* Progress Bar */
+  .progress {
+    height: 28px;
+    border-radius: 15px;
+    background-color: #e9ecef;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 28px;
+    text-align: center;
+    color: #fff;
+    border-radius: 15px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+    background: #f1f1f1;
+    border-top: 1px solid #ddd;
+    margin-top: 40px;
+  }
+
+  /* Modal */
+  .modal-content {
+    background: #f8faff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  }
+
+  .modal-header,
+  .modal-footer {
+    border: none;
+  }
+
+  /* Lists and Labels */
+  .list-group-item {
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    background: #fafafa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .form-label {
+    font-weight: 600;
+  }
+
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.8em;
+    border-radius: 12px;
+  }
+
+  /* Responsive Form Elements */
+  @media (max-width: 576px) {
+    .card-style {
+      padding: 20px;
+    }
+
+    .carousel-caption {
+      padding: 0.5rem 1rem;
+    }
+  }
+</style>
+
+
+
+</head>
+<body class="bg-light">
+
+<!-- Top Heading -->
+<div class="text-center text-white py-4 mb-4" style="background-color: #001f3f;">
+  <h1 class="mb-0">Ultimez AI-Powered Resume Evaluator</h1>
+</div>
+
+<!-- Carousel Section -->
+<div id="infoCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+  <div class="carousel-inner">
+
+    <!-- Slide 1: About the Company -->
+    <div class="carousel-item active" style="background-image: url('https://images.unsplash.com/photo-1551836022-4c4c79ecde16?auto=format&fit=crop&w=1470&q=80'); background-size: cover; background-position: center; height: 50vh;">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>About Ultimez</h5>
+        <p>We are a next-gen digital company driving innovation and empowering talent globally.</p>
+      </div>
+    </div>
+
+    <!-- Slide 2: Our Mission -->
+    <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1581090700227-1e8e3a9d5c7c?auto=format&fit=crop&w=1470&q=80'); background-size: cover; background-position: center; height: 50vh;">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>Our Mission</h5>
+        <p>To create intelligent solutions that simplify hiring, training, and career building through technology.</p>
+      </div>
+    </div>
+
+    <!-- Slide 3: Current Job Vacancies -->
+    <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1581091870621-7c813dc53d8b?auto=format&fit=crop&w=1470&q=80'); background-size: cover; background-position: center; height: 50vh;">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>Current Job Vacancies</h5>
+        <p>
+          {% for role in job_roles %}
+            <span class="badge bg-success mx-1">{{ role.name }}</span>
+          {% endfor %}
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#infoCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#infoCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+<!-- Admin Button & Subheading -->
+<div class="d-flex justify-content-start align-items-center mb-4">
+  {% if is_admin %}
+    <button class="btn btn-danger me-3" onclick="logout()">Logout</button>
+  {% else %}
+    <button class="btn btn-outline-primary me-3" data-bs-toggle="modal" data-bs-target="#loginModal">Admin Login</button>
+  {% endif %}
+  <div class="flex-grow-1 text-center text-white py-3" style="background-color: #001f3f;">
+    <h2 class="mb-0">Ultimez AI Resume Evaluator</h2>
+  </div>
+</div>
+
+<div class="container pb-4">
+
+  <!-- Resume Upload -->
+  <div class="card-style">
+    <form id="resume-form" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label">Upload Resume (PDF, DOCX, or TXT)</label>
+        <input type="file" name="resume" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Select Job Role</label>
+        <select name="job_role_id" class="form-select" required>
+          {% for role in job_roles %}
+            <option value="{{ role.id }}">{{ role.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Evaluate</button>
+    </form>
+  </div>
+
+  <!-- Evaluation Results -->
+  <div id="result-card" class="card-style">
+    <h4>Evaluation Results</h4>
+    <div id="match-percent" class="mb-4"></div>
+    <div class="mb-3">
+      <h5 class="text-success">Matched Skills</h5>
+      <ul id="matched-list"></ul>
+    </div>
+    <div>
+      <h5 class="text-danger">Missing Skills</h5>
+      <ul id="missing-list"></ul>
+    </div>
+  </div>
+  {% if is_admin %}
+  <!-- Admin: Add Job Role -->
+  <div class="card-style">
+    <h4>Add Job Role</h4>
+    <form id="add-role-form">
+      <input type="text" name="job_role_name" class="form-control mb-2" required>
+      <button type="submit" class="btn btn-success">Add Job Role</button>
+    </form>
+    <hr>
+    <h4>Manage Job Roles</h4>
+    {% for role in job_roles %}
+    <div class="d-flex align-items-center mb-2 gap-2">
+      <input type="text" class="form-control role-name-input" data-role-id="{{ role.id }}" value="{{ role.name }}">
+      <button class="btn btn-warning btn-sm edit-role-btn" data-role-id="{{ role.id }}">Edit</button>
+      <button class="btn btn-danger btn-sm delete-role-btn" data-role-id="{{ role.id }}">Delete</button>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Admin: Add Skill -->
+  <div class="card-style">
+    <h4>Add Skill</h4>
+    <form id="add-skill-form">
+      <input type="text" class="form-control mb-2" name="skill_name" required>
+      <select name="job_role_id" class="form-select mb-2" required id="skill-role-select">
+        {% for role in job_roles %}
+          <option value="{{ role.id }}">{{ role.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-info">Add Skill</button>
+    </form>
+  </div>
+
+  <!-- Admin: Manage Skills -->
+  <div class="card-style">
+    <h4>Manage Skills</h4>
+    {% for role in job_roles %}
+      <h5 class="mt-3">{{ role.name }}</h5>
+      {% for skill in role.skills %}
+      <div class="d-flex align-items-center mb-2 gap-2">
+        <input type="text" class="form-control skill-name-input" data-skill-id="{{ skill.id }}" value="{{ skill.name }}">
+        <button class="btn btn-warning btn-sm edit-skill-btn" data-skill-id="{{ skill.id }}">Edit</button>
+        <button class="btn btn-danger btn-sm delete-skill-btn" data-skill-id="{{ skill.id }}">Delete</button>
+      </div>
+      {% else %}
+        <p class="text-muted">No skills added yet.</p>
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  <!-- Uploaded Resumes -->
+  <div class="card-style">
+    <h4>Uploaded Resumes</h4>
+    {% if resumes %}
+    <ul class="list-group">
+      {% for resume in resumes %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ resume.filename }}</strong><br>
+            <small>{{ resume.timestamp.strftime('%Y-%m-%d %H:%M') }}</small><br>
+            <em>Job Role: {{ resume.job_role.name }}</em>
+          </div>
+          <div class="btn-group">
+            <a href="/uploads/{{ resume.filename }}" class="btn btn-sm btn-outline-primary" target="_blank">View</a>
+            <form action="/delete_resume/{{ resume.id }}" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      <p class="text-muted">No resumes uploaded yet.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Admin Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <div class="modal-header">
+        <h5 class="modal-title">Admin Login</h5>
+        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="admin-login-form">
+        <div class="modal-body">
+          <input type="text" id="admin-username" class="form-control mb-2" placeholder="Username" required>
+          <input type="password" id="admin-password" class="form-control mb-2" placeholder="Password" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="mt-5">© Ultimez Technologies</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById("resume-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const response = await fetch("/evaluate", { method: "POST", body: formData });
+  const result = await response.json();
+  document.getElementById("matched-list").innerHTML = result.matched_skills.map(skill => `<li>${skill}</li>`).join('');
+  document.getElementById("missing-list").innerHTML = result.missing_skills.map(skill => `<li>${skill}</li>`).join('');
+  document.getElementById("match-percent").innerHTML = `
+    <strong>Match Percentage:</strong> ${result.match_percentage}%
+    <div class="progress mt-2">
+      <div class="progress-bar bg-success" style="width: ${result.match_percentage}%;">
+        ${result.match_percentage}%
+      </div>
+    </div>`;
+  document.getElementById("result-card").style.display = "block";
+});
+
+document.getElementById("admin-login-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const formData = new FormData();
+  formData.append("username", document.getElementById("admin-username").value);
+  formData.append("password", document.getElementById("admin-password").value);
+  fetch("/login", { method: "POST", body: formData })
+    .then(res => res.json())
+    .then(data => { if (data.success) location.reload(); });
+});
+
+document.getElementById("add-role-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  await fetch("/add_job_role", { method: "POST", body: formData });
+  location.reload();
+});
+
+document.getElementById("add-skill-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  await fetch("/add_skill", { method: "POST", body: formData });
+  location.reload();
+});
+
+document.getElementById("skill-role-select").addEventListener("change", function () {
+  localStorage.setItem("lastSelectedJobRole", this.value);
+});
+
+window.addEventListener("DOMContentLoaded", function () {
+  const saved = localStorage.getItem("lastSelectedJobRole");
+  if (saved) {
+    const dropdown = document.getElementById("skill-role-select");
+    if (dropdown) dropdown.value = saved;
+  }
+});
+
+document.querySelectorAll(".edit-role-btn").forEach(btn => {
+  btn.onclick = async function () {
+    const id = this.dataset.roleId;
+    const input = document.querySelector(`.role-name-input[data-role-id='${id}']`);
+    const form = new FormData();
+    form.append("new_name", input.value);
+    await fetch(`/edit_job_role/${id}`, { method: "POST", body: form });
+    location.reload();
+  };
+});
+
+document.querySelectorAll(".delete-role-btn").forEach(btn => {
+  btn.onclick = async function () {
+    const id = this.dataset.roleId;
+    await fetch(`/delete_job_role/${id}`);
+    location.reload();
+  };
+});
+
+document.querySelectorAll(".edit-skill-btn").forEach(btn => {
+  btn.onclick = async function () {
+    const id = this.dataset.skillId;
+    const input = document.querySelector(`.skill-name-input[data-skill-id='${id}']`);
+    const form = new FormData();
+    form.append("new_name", input.value);
+    await fetch(`/edit_skill/${id}`, { method: "POST", body: form });
+    location.reload();
+  };
+});
+
+document.querySelectorAll(".delete-skill-btn").forEach(btn => {
+  btn.onclick = async function () {
+    const id = this.dataset.skillId;
+    await fetch(`/delete_skill/${id}`);
+    location.reload();
+  };
+});
+
+function logout() {
+  fetch("/logout").then(() => location.reload());
+}
+</script>
+</body>
+</html>
